@@ -7,24 +7,28 @@
 	- THAY
 	- TAYO
 	- TABY
+- myslím na tebe
+	- MYNT
 
 ## HW
 - RPI-zero (w)
 	- micro USB napájení
 	- baterie? možná ty samsungácké, které mám ve skříni?
 		- bylo by složitější na implementaci
-		- někde by musel být indikátor baterie
-- nějaké RGB diody
-- button by měl být fluffy
-	- ne příliš pevné
-	- aby to bylo příjemné na dotek
-	- mělo by stačit jemně položit ruku, aby se to stisklo
-	- nějaké jemné pružinky?
+		- někde by musel být indikátor baterie ()
+- RGB (individuálně ovladatelné) LEDky -- takové ty RGB stripy
+- z buttonu by měl být dobrý pocit
+	- příjemné na dotek
+	- ne příliš tuhé (ať člověk ne musí tlačit)
+		- mělo by stačit jemně položit ruku, aby se to stisklo
+- design z 3D scanu (ručního) nějaké modelíny -- ať je to hezky přírodní tvar
+- žádné zvuky (pro uživatele otravné, těžké na implemetaci... fuj)
+- vibrace?
+	- variabilní se silou stisku?
+	- co vibrovat do tlukotu srdce?
 
 ## Ostatní?
 - lokální mód -- zařízení by se na síti našla a začala spolu komunikovat
-- žádné zvuky -- pouze obraz
-- co vibrace (variabilní)?
 
 ## Setup
 
@@ -37,4 +41,9 @@
 
 ### Bluetooth-based
 - podobné jako wifi, ale přes bluetooth
-- možná větší oser -- aplikace na různá zařízení
+	- RPI hostuje aplikaci a mobil na ni vidí přes Bluetooth -- jde tohle vůbec?
+- asi větší oser -- aplikace na různá zařízení
+
+### Kabel-based
+- připojení vystaví na světlo nějakou složku s konfigurákem, který si uživatel upraví
+- mohlo by fungovat paralelně s dalšími metodami
