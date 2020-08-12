@@ -1,0 +1,11 @@
+#!/bin/bash
+# should be copied to /etc/rc.local
+
+modprobe dwc2
+modprobe gadgetfs
+
+mkdir /dev/gadget
+mount -t gadgetfs gadgetfs /dev/gadget
+
+/usr/bin/umtprd &
+exit 0
