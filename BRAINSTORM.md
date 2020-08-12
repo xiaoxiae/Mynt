@@ -1,15 +1,5 @@
 # Brainstorming
 
-## Jména
-- thinking of you
-	- TOY
-- thinking about you
-	- THAY
-	- TAYO
-	- TABY
-- myslím na tebe
-	- MYNT
-
 ## HW
 - RPI-zero (w)
 	- micro USB napájení
