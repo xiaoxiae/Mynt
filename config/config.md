@@ -5,6 +5,10 @@ Eventuálně bude nahrazeno skriptem, který na čersvé RPI nastaví Mynt.
 ## Úvod
 - `scp` věcí, které budou potřeba
 	- věci v `config/` složce na správná místa
+		- nezapomenout všechny `+x` chmodnout
+	- adresář `mynt/` do homu
+	- instalace `config_watch.sh` skriptu (a jeho `+x` chmodnutí)
+		- nezapomenout dát spouštění do `rc.local`
 - update systému (`sudo apt-get update`, `sudo apt-get upgrade`)
 - instalace programů (`sudo apt install git`)
 
