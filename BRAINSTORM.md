@@ -1,11 +1,7 @@
 # Brainstorming
 
 ## HW
-- RPI-zero (w)
-	- micro USB napájení
-	- baterie? možná ty samsungácké, které mám ve skříni?
-		- bylo by složitější na implementaci
-		- někde by musel být indikátor baterie ()
+- RPI-zero (w), micro USB napájení
 - RGB (individuálně ovladatelné) LEDky
 	- https://www.tme.eu/cz/details/hcbaa30w/zdroje-svetla-pasy-led/worldsemi/hc-f5v-30l-30led-w-ws2813-ip20/
 - z buttonu by měl být dobrý pocit
@@ -28,20 +24,9 @@
 - lokální -- zařízení by se na síti našla a začala spolu komunikovat
 - server -- povídání si se serverem přes Wifinu
 
-## Setup
-
-### Wifi-based
-- RPI hostne wifinu, na kterou se uživatel připojí
-- bude tam interface, do kterého se zadá jméno a heslo Wifi sítě, na kterou se má připojit
-- pokud to vyjde, tak se to připojí a zůstane to na té wifině, člověk s tím bude moci komunikovat přes stejný interface, ale přes internet
-	- tohle je TODO, bude výrazně těžší a bude chtít server
-- configure button -- zmáčknutí odpojí od wifiny a promptne ten config
-
-### Bluetooth-based
-- podobné jako wifi, ale přes bluetooth
-	- RPI hostuje aplikaci a mobil na ni vidí přes Bluetooth -- jde tohle vůbec?
-- asi větší oser -- aplikace na různá zařízení
-
-### Kabel-based
-- připojení vystaví na světlo nějakou složku s konfigurákem, který si uživatel upraví
-- mohlo by fungovat paralelně s dalšími metodami
+## Kabel-based konfigurace
+- připojení vystaví složku s konfigurákem, který si uživatel upraví
+- použití MTP, aby se to chovalo, jako když se připojuje mobil
+- `yaml` soubor, na který RPIčko kouká a něco dělá, když se změní
+- rovněž nějak rozumně uložit RGB nastavení
+- dát tomu .txt příponu, ať to můžou noobové také otevřít
