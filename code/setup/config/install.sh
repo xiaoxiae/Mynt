@@ -15,7 +15,7 @@ apt install git -y
 mv "rc.local" "/etc/rc.local"
 chmod +x "/etc/rc.local"
 
-mkdir -p "/etc/umtprd/umtprd.conf"
+mkdir -p "/etc/umtprd"
 mv "umtprd.conf" "/etc/umtprd/umtprd.conf"
 
 echo "dtoverlay=dwc2" | sudo tee -a /boot/config.txt

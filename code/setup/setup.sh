@@ -42,7 +42,7 @@ echo "Copying configuration."
 sudo cp -r config/* $RPI_SYSTEM_MNT_LOCATION/home/pi/
 sudo tee "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local" << EOF
 #!/bin/bash
-/home/pi/install.sh &
+/home/pi/install.sh > /home/pi/install.log &
 exit 0
 EOF
 sudo chmod +x "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local"
