@@ -1,0 +1,9 @@
+#----------------------------------------#
+# This is a configuration file for Mynt. #
+#----------------------------------------#
+
+wifi:
+  name:     TODO
+  password: TODO
+
+# COLORS

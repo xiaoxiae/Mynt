@@ -1,5 +1,5 @@
 #!/bin/bash
-# should be copied to /etc/rc.local
+# To be copied to /etc/rc.local
 
 modprobe dwc2
 modprobe gadgetfs
