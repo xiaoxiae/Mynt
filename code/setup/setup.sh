@@ -62,6 +62,17 @@ network={
 }
 EOF
 
+echo -n "Enter Mynt pair ID (leave empty to generate one):"; read id
+if [ $id == "" ]
+then
+	id=$(cat /dev/random | tr -cd a-zA-Z0-9 | head -c 16)
+	echo "ID: $id"
+	echo "Enter it when creating the paired device. Press enter to continue."
+	read
+fi
+
+echo $id | sudo tee "$RPI_SYSTEM_MNT_LOCATION/home/pi/.mynt_id"
+
 if [ $DEBUG -eq 1 ]
 then
 	echo "[DEBUG] Enabling SSH."

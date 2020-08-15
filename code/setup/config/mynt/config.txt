@@ -3,7 +3,5 @@
 #----------------------------------------#
 
 wifi:
-  name:     TODO
-  password: TODO
-
-# COLORS
+  name:     "TODO"
+  password: "TODO"
