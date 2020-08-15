@@ -66,6 +66,14 @@ if [ $DEBUG -eq 1 ]
 then
 	echo "[DEBUG] Enabling SSH."
 	sudo touch $RPI_BOOT_MNT_LOCATION/ssh
+
+	if [ -f ~/.ssh/id_rsa.pub ]
+	then
+		echo "[DEBUG] Copying ~/.ssh/id_rsa.pub to RPI's authorized keys."
+		sudo mkdir -p $RPI_SYSTEM_MNT_LOCATION/home/pi/.ssh
+		sudo cp ~/.ssh/id_rsa.pub $RPI_SYSTEM_MNT_LOCATION/home/pi/.ssh/authorized_keys
+		sudo chmod 600 $RPI_SYSTEM_MNT_LOCATION/home/pi/.ssh/authorized_keys
+	fi
 fi
 
 sleep 1

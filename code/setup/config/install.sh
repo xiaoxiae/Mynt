@@ -11,6 +11,11 @@ apt-get update -y
 apt-get upgrade -y
 apt install git -y
 
+if [ $DEBUG -eq 1 ]
+then
+	apt install vim tmux -y
+fi
+
 # set up (u)MTP
 mv "rc.local" "/etc/rc.local"
 chmod +x "/etc/rc.local"
