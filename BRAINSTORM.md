@@ -9,11 +9,10 @@
 - heartrate sensor
 	- aktivace přes chycení
 	- https://www.ebay.com/itm/254337746890
-	- na druhé straně to bude tak vibrovat
+	- na druhé straně to bude tak vibrovat a svítit
+		- https://www.ebay.com/itm/133285018930
 	- asi palec-ukazováček
 - pohodlné držení
-- možné vibrace
-	- https://www.ebay.com/itm/133285018930
 
 ## SW
 - povídání si s centralním serverem přes Wifinu
@@ -28,16 +27,19 @@
 ### Kabel-based konfigurace
 - připojení vystaví složku s konfigurákem, který si uživatel upraví
 - použití MTP, aby se to chovalo, jako když se připojuje mobil
+	- TODO: jde přes to soubor in-place editovat?
 - `yaml` soubor, na který RPIčko kouká a něco dělá, když se změní
 	- dát tomu .txt příponu, ať to můžou noobové také otevřít
 - rovněž nějak rozumně uložit RGB nastavení
 
-### Chování ledek, TODO: pobavit se o tom s Kačkou
-| něco se posralo       | červené pulzování, TODO: nějak rozlišit co?               |
-| změna configu         | bílé pulznutí (že ho to vzalo)                            |
-| připojování k Wifi    | tikání jako hodiny (bíle)                                 |
-| připojování k serveru | tikání jako hodiny (zeleně)                               |
-| čekání na druhého     | plynulé posouvání ledek, do tlukotu srdce pak měnit barvu |
+### Animace, TODO: pobavit se o tom s Kačkou
+| nahrání configu         | bílé pulznutí (že ho to vzalo)                              |
+| odstranění configu      | červené pulznutí (že zmizel)                                |
+| připojování k Wifi      | tikání jako hodiny (bíle)                                   |
+| připojování k serveru   | tikání jako hodiny (zeleně); dělat to pořád, ikdyž to nejde |
+| čekání na druhého       | plynulé posouvání ledek, do tlukotu srdce pak měnit barvu   |
+| stalo se něco strašnýho | červené pulzování                                           |
 
 ## Misc.
 - zkusit jiné fonty u loga, srdce ale vypadá docela hezky
+- `inotify` (u configu) v separátním Python threadu?
