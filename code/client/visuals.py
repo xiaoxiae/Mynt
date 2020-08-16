@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import *
 from math import cos, pi, ceil
 from functools import partial
+from abc import ABC, abstractmethod
 from time import time
 
 Numeric = Union[int, float]
@@ -37,69 +38,91 @@ class Color:
         return Color(self.r * coefficient, self.g * coefficient, self.b * coefficient)
 
 
-class Animation:
-    """A class for working with LED animations."""
+class Animation(ABC):
+    """A base class for all LED animations."""
 
-    LED_COUNT: int = 5  # how many LEDs there are
+    LED_COUNT: int = 5  # how many LEDs there are to animate
 
-    @classmethod
-    def __sinify(cls, x):
+    def sinify(self, x: float) -> float:
         """Run through a sin function that returns values \in [0, 1]"""
-        return 1 - (cos(x * pi) + 1) / 2
+        return 1 - (cos(x * pi * 2) + 1) / 2
 
-    @classmethod
-    def __pulsing(cls, c1: Color, c2: Color, period: float, offset: float = 0):
-        t = (time() - offset) / period * 2
-        return [c1.interpolate(c2, cls.__sinify(t))] * cls.LED_COUNT
+    def get_period(self):
+        """Return, which period the animation is on."""
+        return (time() - self.offset) / self.period
 
-    @classmethod
-    def pulsing(cls, c1: Color, c2: Color, period: float, offset: float = 0):
-        """A pulsing animation -- from color to color in a sine wave."""
-        return partial(cls.__pulsing, c1, c2, period, offset)
+    def __init__(self, period, repeats=True, offset=0):
+        self.period = period
+        self.repeats = repeats
 
-    @classmethod
-    def __metronome(cls, color: Color, period: float, offset: float = 0):
-        colors = [Color(0, 0, 0) for _ in range(cls.LED_COUNT)]
-        t = (time() - offset) / period * 2
+        # the animations are based on time - this offset
+        # this is done so animations can properly start and smoothly transition
+        self.offset = offset
 
-        led_position = cls.__sinify(t) * (cls.LED_COUNT - 1)
+    @abstractmethod
+    def __call__(self) -> Tuple[Tuple[int, int, int]]:
+        """All animations must be callable and return a tuple of the LED colors."""
 
-        l1 = int(led_position)
-        l2 = int(ceil(led_position))
 
-        l1_c = 1 - (led_position - int(led_position))
-        l2_c = 1 - (int(ceil(led_position)) - led_position)
+class PulsingAnimation(Animation):
+    """A pulsing animation -- from color to color in a sine wave."""
 
-        colors[l1] = color.darker(l1_c)
-        colors[l2] = color.darker(l2_c)
+    def __init__(self, c1: Color, c2: Color, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.c1 = c1
+        self.c2 = c2
+
+    def __call__(self):
+        return [
+            self.c1.interpolate(self.c2, self.sinify(self.get_period()))
+        ] * self.LED_COUNT
+
+
+class MetronomeAnimation(Animation):
+    """A metronome animation -- from one end of the LEDs to the other."""
+
+    def __init__(self, color: Color, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.color = color
+
+    def __call__(self):
+        colors = [Color(0, 0, 0) for _ in range(self.LED_COUNT)]
+
+        # LED position
+        pos = self.sinify(self.get_period()) * (self.LED_COUNT - 1)
+
+        l1 = int(pos)
+        l2 = int(ceil(pos))
+
+        l1_c = 1 - (pos - int(pos))
+        l2_c = 1 - (int(ceil(pos)) - pos)
+
+        colors[l1] = self.color.darker(l1_c)
+        colors[l2] = self.color.darker(l2_c)
 
         return colors
 
-    @classmethod
-    def metronome(cls, color: Color, period: float, offset: float = 0):
-        """A metronome animation -- from one end of the LEDs to the other."""
-        return partial(cls.__metronome, color, period, offset)
 
-    @classmethod
-    def __linear(cls, color: Color, period: float, offset: float = 0):
-        colors = [Color(0, 0, 0) for _ in range(cls.LED_COUNT)]
-        t = (time() - offset) / period * 2
+class LinearAnimation(Animation):
+    """A metronome animation -- from one end of the LEDs to the other."""
 
-        l1 = int(t) % cls.LED_COUNT
-        l2 = int(ceil(t)) % cls.LED_COUNT
+    def __init__(self, color: Color, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.color = color
 
-        l1_c = 1 - (t - int(t))
-        l2_c = 1 - (int(ceil(t)) - t)
+    def __call__(self):
+        colors = [Color(0, 0, 0) for _ in range(self.LED_COUNT)]
 
-        colors[l1] = color.darker(l1_c)
-        colors[l2] = color.darker(l2_c)
+        pos = self.get_period() * self.LED_COUNT
+
+        l1 = int(pos) % self.LED_COUNT
+        l2 = int(ceil(pos)) % self.LED_COUNT
+
+        l1_c = 1 - (pos - int(pos))
+        l2_c = 1 - (int(ceil(pos)) - pos)
+
+        colors[l1] = self.color.darker(l1_c)
+        colors[l2] = self.color.darker(l2_c)
 
         return colors
-
-    @classmethod
-    def linear(cls, color: Color, period: float, offset: float = 0):
-        """A metronome animation -- from one end of the LEDs to the other."""
-        return partial(cls.__linear, color, period, offset)
-
-
-# TODO: předělat na třídy, tohle je vcelku oser
