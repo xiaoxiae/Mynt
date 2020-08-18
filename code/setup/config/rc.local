@@ -7,5 +7,6 @@ modprobe gadgetfs
 mkdir /dev/gadget
 mount -t gadgetfs gadgetfs /dev/gadget
 
+# TODO: make a uMTP while-true loop in a separate script
 /usr/bin/umtprd &
 exit 0

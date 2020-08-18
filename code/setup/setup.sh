@@ -38,6 +38,7 @@ sudo mount $disk\1 $RPI_BOOT_MNT_LOCATION
 sudo mount $disk\2 $RPI_SYSTEM_MNT_LOCATION
 
 # copy configuration files and an install script over to the PI
+# TODO: replace TODOs in wifi name and password the one read here
 echo "Copying configuration."
 sudo cp -r config/* $RPI_SYSTEM_MNT_LOCATION/home/pi/
 sudo tee "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local" << EOF

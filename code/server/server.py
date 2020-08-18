@@ -13,3 +13,6 @@ while True:
     connection, client_address = sock.accept()
 
     print(connection, client_address)
+
+class MyntServer:
+    """A class for serving the Mynt clients."""
