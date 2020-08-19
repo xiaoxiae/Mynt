@@ -43,3 +43,8 @@
 ## Misc.
 - zkusit jiné fonty u loga, srdce ale vypadá docela hezky
 - `inotify` (u configu) v separátním Python threadu?
+- `public` klíč -- veřejné připojování
+	- vždy má každý timeout, ať to nemůže spamovat
+- umožnění více připojení
+- neromantické/nepárové edice -- jiné barvy, žádný tlukot srdce
+	- user-defined
