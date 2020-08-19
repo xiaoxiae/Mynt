@@ -1,13 +1,14 @@
-from __future__ import annotations
 from typing import *
 from dataclasses import *
 from yaml import safe_load, YAMLError
 import sys
+import os
 
 
 @dataclass
 class Strict:
-    """A class for strictly checking whether each of the dataclass var types match."""
+    """A class for strictly checking whether each of the dataclass variable types
+    match."""
 
     def __post_init__(self):
         """Perform the check."""
@@ -38,7 +39,7 @@ class Strict:
 @dataclass
 class Wifi(Strict):
     name: str
-    password: str
+    password: Optional[str]
 
 
 @dataclass
@@ -61,7 +62,45 @@ class Configuration(Strict):
             return d
 
     @classmethod
-    def from_file(cls, path: str) -> Configuration:
-        """Initialize a Configuration object from a file. Can throw exceptions."""
-        with open(path, "r") as f:
-            return Configuration.from_dictionary(safe_load(f) or {})
+    def from_file(cls, path: str):
+        """Initialize a Configuration object from a file. Returns None if the file
+        doesn't exist, can't be open or the parsing failed."""
+        try:
+            with open(path, "r") as f:
+                return Configuration.from_dictionary(safe_load(f) or {})
+        except Exception:
+            pass
+
+
+class ConfigurationWatcher:
+    """A class for interacting with the configuration (and watching for changes)."""
+
+    # PATH = "/home/pi/mynt/config.txt"
+    PATH = "/home/xiaoxiae/config.txt"
+
+    def __init__(self):
+        self.__update_configuration()
+        self.modified_time = None
+
+    def __update_configuration(self):
+        """Re-parse the configuration."""
+        self.configuration = Configuration.from_file(self.PATH)
+
+    def changed(self):
+        """Check the modified time of the configuration, returning True if it has
+        changed since the last time we checked and False if not."""
+        # Checking for the existence of the file doesn't work here, since getmtime seems
+        # to fail, when the file is inaccessible due to (for example) someone writing
+        # to it. That's why try-except is used here.
+        try:
+            mtime = os.path.getmtime(self.PATH)
+        except FileNotFoundError:
+            mtime = None
+
+        result = mtime != self.modified_time
+        self.modified_time = mtime
+
+        if result:
+            self.__update_configuration()
+
+        return result
