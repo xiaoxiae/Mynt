@@ -11,6 +11,8 @@ RPI_SYSTEM_MNT_LOCATION=/tmp/rpimnt/system
 RPI_IMAGE_NAME=rpios.img
 RPI_IMAGE_URL="https://downloads.raspberrypi.org/raspios_lite_armhf_latest"
 
+ID_LENGTH=16
+
 
 echo "Running Mynt configuration script."
 echo "----------------------------------"
@@ -66,7 +68,7 @@ EOF
 echo -n "Enter Mynt pair ID (leave empty to generate one):"; read id
 if [ $id == "" ]
 then
-	id=$(cat /dev/random | tr -cd a-zA-Z0-9 | head -c 16)
+	id=$(cat /dev/random | tr -cd a-zA-Z0-9 | head -c $ID_LENGTH)
 	echo "ID: $id"
 	echo "Enter it when creating the paired device. Press enter to continue."
 	read
