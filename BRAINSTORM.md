@@ -42,9 +42,14 @@
 
 ## Misc.
 - zkusit jiné fonty u loga, srdce ale vypadá docela hezky
-- `inotify` (u configu) v separátním Python threadu?
 - `public` klíč -- veřejné připojování
 	- vždy má každý timeout, ať to nemůže spamovat
 - umožnění více připojení
 - neromantické/nepárové edice -- jiné barvy, žádný tlukot srdce
 	- user-defined
+
+### Webová stránka
+- Mynt webová stránka, která udává status serveru 
+	- kolik je aktuálně připojených lidí
+	- nějaké informace o projektu
+	- veřejné klíče, které si aktuálně někdo registroval -- anonymní Mynt
