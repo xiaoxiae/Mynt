@@ -1,3 +1,7 @@
+# Large binaries, caches
 __pycache__
-design
 rpios.img
+
+# Ignore me messing around
+playground
+design
