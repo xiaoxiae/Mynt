@@ -1,8 +1,8 @@
+"""A module for handing anything visuals-related (colors, animations, LEDs...)."""
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import *
 from math import cos, pi, ceil
-from functools import partial
 from abc import ABC, abstractmethod
 from time import time
 

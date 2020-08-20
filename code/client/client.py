@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+"""A module for communicating with the Mynt server."""
 import socket
 import sys
 

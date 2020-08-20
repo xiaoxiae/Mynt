@@ -1,3 +1,5 @@
+"""A module for working with the configuration file. Most of the code is stolen from my
+other project: https://github.com/xiaoxiae/Education-Scripts."""
 from typing import *
 from dataclasses import *
 from yaml import safe_load, YAMLError
