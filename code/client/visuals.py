@@ -5,6 +5,7 @@ from typing import *
 from math import cos, pi, ceil
 from abc import ABC, abstractmethod
 from time import time
+from random import randint, seed
 
 Numeric = Union[int, float]
 
@@ -105,7 +106,7 @@ class MetronomeAnimation(Animation):
 
 
 class LinearAnimation(Animation):
-    """A metronome animation -- from one end of the LEDs to the other."""
+    """A linear animation -- from one end of the LEDs to the other."""
 
     def __init__(self, color: Color, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,12 +129,30 @@ class LinearAnimation(Animation):
         return colors
 
 
+class ProgressAnimation(Animation):
+    """Like linear animation, but fills up the progress bar."""
+
+    def __init__(self, color: Color, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.color = color
+
+    def __call__(self):
+        colors = [Color(0, 0, 0) for _ in range(self.LED_COUNT)]
+
+        pos = self.get_period() * self.LED_COUNT
+        colors[int(pos) % self.LED_COUNT] = self.color.darker(pos - int(pos))
+
+        for i in range(int(pos) % self.LED_COUNT):
+            colors[i] = self.color
+
+        return colors
+
+
 # runs testing code when ran as a module
 if __name__ == "__main__":
     import tkinter
 
     def from_rgb(color):
-        print(color)
         return "#%02x%02x%02x" % (int(color.r), int(color.g), int(color.b))
 
     top = tkinter.Tk()
@@ -143,12 +162,12 @@ if __name__ == "__main__":
     canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * Animation.LED_COUNT)
     canvas.pack()
 
-    animation = None  # TODO add animation here
+    animation = ProgressAnimation(Color(200, 200, 200), 1)  # TODO add animation here
 
     while True:
         top.update_idletasks()
         top.update()
 
         for i in range(Animation.LED_COUNT):
-            color = from_rgb(animation()[i])j
+            color = from_rgb(animation()[i])
             canvas.create_rectangle(i * r, 0, (i + 1) * r, r, fill=color)
