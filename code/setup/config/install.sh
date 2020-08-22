@@ -9,7 +9,9 @@ cd "$(dirname "$0")"
 # update, install apps
 apt-get update -y
 apt-get upgrade -y
-apt install git -y
+
+apt install git python3-pip -y
+pip3 install pyyaml # TODO other python modules
 
 if [ $DEBUG -eq 1 ]
 then
