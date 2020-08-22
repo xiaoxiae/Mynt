@@ -126,3 +126,29 @@ class LinearAnimation(Animation):
         colors[l2] = self.color.darker(l2_c)
 
         return colors
+
+
+# runs testing code when ran as a module
+if __name__ == "__main__":
+    import tkinter
+
+    def from_rgb(color):
+        print(color)
+        return "#%02x%02x%02x" % (int(color.r), int(color.g), int(color.b))
+
+    top = tkinter.Tk()
+
+    r = 50
+
+    canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * Animation.LED_COUNT)
+    canvas.pack()
+
+    animation = None  # TODO add animation here
+
+    while True:
+        top.update_idletasks()
+        top.update()
+
+        for i in range(Animation.LED_COUNT):
+            color = from_rgb(animation()[i])j
+            canvas.create_rectangle(i * r, 0, (i + 1) * r, r, fill=color)
