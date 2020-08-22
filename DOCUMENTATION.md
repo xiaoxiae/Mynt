@@ -12,12 +12,16 @@ Here are links to resources used during the building of the project.
 - uMTP: https://github.com/viveris/uMTP-Responder
 
 ### Python 3
-- Socket:
-	- Documentation: https://docs.python.org/3/library/socket.html
+- Socket
 	- How-to: https://pymotw.com/2/socket/tcp.html
-- Threading:
-	- Documentation: https://docs.python.org/3/library/threading.html
+	- Documentation: https://docs.python.org/3/library/socket.html
+- Threading
 	- How-to: https://realpython.com/intro-to-python-threading/
+	- Documentation: https://docs.python.org/3/library/threading.html
 - Async/await
-	- Documentation: https://docs.python.org/3/library/asyncio-task.html
 	- How-to: https://realpython.com/async-io-python/
+	- Coroutines and Tasks: https://docs.python.org/3/library/asyncio-task.html
+	- Event Loop: https://docs.python.org/3/library/asyncio-eventloop.html
+	- Streams: https://docs.python.org/3/library/asyncio-stream.html
+	- Queues: https://docs.python.org/3/library/asyncio-queue.html
+	- asyncio module: https://docs.python.org/3/library/asyncio.html
