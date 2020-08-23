@@ -1,7 +1,16 @@
 # Documentation
 This document contains information on how Mynt works (both software and hardware-wise). You should read this if you're either generally interested, or would like to contribute.
 
-## Resouces
+## Protocol
+Mynt client devices communicate with the server that runs on `<TODO: IP>`. It listens to two ports: `9106` (taken from `[ord(c) % 10 for c in 'mynt']`, client -> server communication) and `9107` (server -> client communication).
+
+Each communication session begins with the client sending two lines: its UID (can be pretty much anything; MAC address is used in my implementation) and its Mynt ID.  After that, it either writes to server or listens to the server.
+
+### Client -> Server commands
+
+### Server -> Client commands
+
+## Resources
 Here are links to resources used during the building of the project.
 
 ### Hardware
