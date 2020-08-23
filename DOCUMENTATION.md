@@ -2,13 +2,24 @@
 This document contains information on how Mynt works (both software and hardware-wise). You should read this if you're either generally interested, or would like to contribute.
 
 ## Protocol
-Mynt client devices communicate with the server that runs on `<TODO: IP>`. It listens to two ports: `9106` (taken from `[ord(c) % 10 for c in 'mynt']`, client -> server communication) and `9107` (server -> client communication).
+Mynt client devices communicate with the server that runs on `<TODO: IP>`. It listens on port `9106` (taken from `[ord(c) % 10 for c in 'mynt']`).
 
-Each communication session begins with the client sending two lines: its UID (can be pretty much anything; MAC address is used in my implementation) and its Mynt ID.  After that, it either writes to server or listens to the server.
+When sending a message to the server, use the following format (making sure to end with a newline!):
+```
+UID | Mynt ID | command
+```
 
-### Client -> Server commands
+The UID can be pretty much anything device-unique, like MAC address (used in my implementation). Mynt ID is the ID of the paired device, so it is properly sent to the other connected paired one. Supported command formats are the following:
+- TODO
 
-### Server -> Client commands
+Command checking is done on the client side, the server is just here to relay the messages from one client to another. This means that if you wish to add custom commands and still use the official Mynt server, go for it!
+
+When getting a message from the server, the user first has to send a message in the following format (again, making sure to end with a newline!):
+```
+UID | Mynt ID
+```
+
+After this, the server will send a single message back and close the connection.
 
 ## Resources
 Here are links to resources used during the building of the project.
@@ -22,13 +33,14 @@ Here are links to resources used during the building of the project.
 
 ### Python 3
 - Socket
-	- How-to: https://pymotw.com/2/socket/tcp.html
+	- Article: https://pymotw.com/2/socket/tcp.html
+	- How-to: https://docs.python.org/3/howto/sockets.html
 	- Documentation: https://docs.python.org/3/library/socket.html
 - Threading
 	- How-to: https://realpython.com/intro-to-python-threading/
 	- Documentation: https://docs.python.org/3/library/threading.html
 - Async/await
-	- How-to: https://realpython.com/async-io-python/
+	- Article: https://realpython.com/async-io-python/
 	- Coroutines and Tasks: https://docs.python.org/3/library/asyncio-task.html
 	- Event Loop: https://docs.python.org/3/library/asyncio-eventloop.html
 	- Streams: https://docs.python.org/3/library/asyncio-stream.html
