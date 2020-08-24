@@ -1,11 +1,28 @@
 """A module for communicating with the Mynt server."""
-import socket
-import sys
+from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR
+from time import sleep
+from uuid import getnode as get_mac
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def send_data(data: str, sock: socket):
+    sock.sendall(data.encode("utf-8") + b"\n")
 
-print(sock.connect(('localhost', 9106)))
+def receive_data(sock: socket):
+    return sock.recv(MAX_MESSAGE_SIZE)
 
-class MyntClient:
-    """A class for interacting with the Mynt server."""
+if __name__ == "__main__":
+    uid = hex(get_mac())
+    mynt_id = "test"
 
+    SEND = True
+
+    # first send some data
+    sock = socket(AF_INET, SOCK_STREAM)
+    sock.connect(('localhost', 9106))
+
+    if SEND:
+        send_data(f"{uid} | {mynt_id} | test command", sock)
+        sock.close()
+    else:
+        send_data(f"{uid}123 | {mynt_id}", sock)
+        print(sock.recv(1024))
+        sock.close()
