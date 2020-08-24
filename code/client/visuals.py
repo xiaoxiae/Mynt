@@ -1,4 +1,4 @@
-"""A module for handing anything visuals-related (colors, animations, LEDs...)."""
+"""A module for handing anything color/animation related."""
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import *
