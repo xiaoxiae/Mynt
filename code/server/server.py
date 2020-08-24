@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
+# TODO: should IP be localhost?
+# TODO: add debug messages
+# TODO: discard messages that are too old / there is too many of them in a queue
+# - both could neatly be handled when the client is adding stuff to the queue
 from typing import *
 import asyncio
 
 queues: Dict[str, asyncio.Queue] = {}
 DELIMITER = b" | "
-
-
-def debug_message(msg: str):
-    """Print a formatted debug message."""
-    # TODO
 
 
 def ensure_queue(mynt_id):
