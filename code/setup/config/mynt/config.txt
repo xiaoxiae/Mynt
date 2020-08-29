@@ -3,5 +3,6 @@
 #----------------------------------------#
 
 wifi:
-  name:     "TODO"
-  password: "TODO"
+- {name: "wifi name", password: "wifi password"}        # main Wifi
+# - {name: "wifi 2 name", password: "wifi 2 password"}  # another Wifi that Mynt will try next
+# - {name 3: "wifi 3 name"}                             # yet another Wifi, but without password
