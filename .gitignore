@@ -1,6 +1,7 @@
-# Large binaries, caches
-__pycache__
+# Large binaries, caches, log files
 rpios.img
+__pycache__
+*.log
 
 # Ignore me messing around
 development

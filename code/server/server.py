@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # TODO: should IP be localhost?
-# TODO: add debug messages
+# TODO: add debug messages and logging
 # TODO: discard messages that are too old
 # - a new co-routine to prevent people spamming with different UIDs
 from typing import *
 import asyncio
 from time import time
 from dataclasses import dataclass
+
+import logging
+logging.basicConfig(filename="server.log", level=logging.DEBUG)
 
 queues: Dict[str, asyncio.PriorityQueue] = {}
 
