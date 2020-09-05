@@ -18,9 +18,17 @@ class Color:
     g: Numeric
     b: Numeric
 
-    def __call__(self) -> Tuple[int, int, int]:
-        """Return the color in RGB."""
+    def to_tuple(self) -> Tuple[int, int, int]:
+        """Return the color as a tuple."""
         return int(self.r), int(self.g), int(self.b)
+
+    def to_bits(self) -> int:
+        """Return a 24-bit representation of the color."""
+        return (self.r << 16) | (self.g << 8) | self.b
+
+    def to_rgb(color) -> str:
+        """Return the color as a RRRGGGBBB string."""
+        return "#%02x%02x%02x" % color.to_tuple()
 
     def __linear_interpolation(self, a: Numeric, b: Numeric, x: Numeric) -> Numeric:
         """Interpolate between a and b. $x \in [0, 1]$"""
@@ -152,9 +160,6 @@ class ProgressAnimation(Animation):
 if __name__ == "__main__":
     import tkinter
 
-    def from_rgb(color):
-        return "#%02x%02x%02x" % (int(color.r), int(color.g), int(color.b))
-
     top = tkinter.Tk()
 
     r = 50
@@ -162,12 +167,12 @@ if __name__ == "__main__":
     canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * Animation.LED_COUNT)
     canvas.pack()
 
-    animation = ProgressAnimation(Color(200, 200, 200), 1)  # TODO add animation here
+    animation = ProgressAnimation(Color(100, 200, 200), 1)  # TODO add animation here
 
     while True:
         top.update_idletasks()
         top.update()
 
         for i in range(Animation.LED_COUNT):
-            color = from_rgb(animation()[i])
+            color = animation()[i].to_rgb()
             canvas.create_rectangle(i * r, 0, (i + 1) * r, r, fill=color)
