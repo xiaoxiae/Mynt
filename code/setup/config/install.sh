@@ -11,7 +11,7 @@ apt-get update -y
 apt-get upgrade -y
 
 apt install git python3-pip -y
-pip3 install pyyaml typeguard # TODO other python modules
+pip3 install pyyaml typeguard rpi_ws281x
 
 if [ $DEBUG -eq 1 ]
 then
