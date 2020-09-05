@@ -1,6 +1,6 @@
 #!/bin/bash
 # A script to set up RPI OS with Mynt on a specified device.
-DEBUG=0
+DEBUG=1
 
 set -eu
 cd "$(dirname "$0")"

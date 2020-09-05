@@ -1,7 +1,7 @@
 #!/bin/bash
 # To be copied to /home/pi/install.sh
 # A script to be ran the first time RPI starts.
-DEBUG=0
+DEBUG=1
 
 set -eu
 cd "$(dirname "$0")"
