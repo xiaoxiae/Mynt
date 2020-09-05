@@ -26,6 +26,7 @@ class Wifi(Strict):
 @dataclass
 class Configuration(Strict):
     wifi: List[Wifi]
+    id: str
 
     @classmethod
     def from_dictionary(cls, d: Dict):

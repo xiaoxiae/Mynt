@@ -39,16 +39,6 @@ mkdir -p $RPI_BOOT_MNT_LOCATION $RPI_SYSTEM_MNT_LOCATION
 sudo mount $disk\1 $RPI_BOOT_MNT_LOCATION
 sudo mount $disk\2 $RPI_SYSTEM_MNT_LOCATION
 
-# copy configuration files and an install script over to the PI
-# TODO: replace TODOs in wifi name and password the one read here
-echo "Copying configuration."
-sudo cp -r config/* $RPI_SYSTEM_MNT_LOCATION/home/pi/
-sudo tee "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local" << EOF
-#!/bin/bash
-/home/pi/install.sh > /home/pi/install.log &
-exit 0
-EOF
-sudo chmod +x "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local"
 
 echo "Saving Wifi credentials."
 echo -n "Name: "; read name
@@ -65,8 +55,9 @@ network={
 }
 EOF
 
-echo -n "Enter Mynt pair ID (leave empty to generate one):"; read id
-if [ $id == "" ]
+
+echo -n "Enter Mynt pair ID (leave empty to generate one): "; read id
+if [ "$(echo $id | tr -d ' ')" == "" ]
 then
 	id=$(cat /dev/random | tr -cd a-zA-Z0-9 | head -c $ID_LENGTH)
 	echo "ID: $id"
@@ -74,7 +65,32 @@ then
 	read
 fi
 
-echo $id | sudo tee "$RPI_SYSTEM_MNT_LOCATION/home/pi/.mynt_id"
+
+echo "Copying configuration."
+sudo cp -r config/* $RPI_SYSTEM_MNT_LOCATION/home/pi/
+
+# create the configuration
+sudo mkdir $RPI_SYSTEM_MNT_LOCATION/home/pi/mynt
+sudo tee "$RPI_SYSTEM_MNT_LOCATION/home/pi/mynt/config.txt" << EOF
+#----------------------------------------#
+# This is a configuration file for Mynt. #
+# It's YAML, but txt is user-friendly :) #
+#----------------------------------------#
+
+wifi:
+- {name: "$name", password: "$password"}
+#- {name: "wifi 2 name", password: "wifi 2 password"}  # another Wifi that Mynt will try next
+#- {name 3: "wifi 3 name"}  # yet another Wifi, but this time without password
+
+id: $id
+EOF
+
+sudo tee "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local" << EOF
+#!/bin/bash
+/home/pi/install.sh > /home/pi/install.log &
+exit 0
+EOF
+sudo chmod +x "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local"
 
 if [ $DEBUG -eq 1 ]
 then
