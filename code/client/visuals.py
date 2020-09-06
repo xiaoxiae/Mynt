@@ -52,13 +52,12 @@ class Animation(ABC):
         """Run through a sin function that returns values \in [0, 1]"""
         return 1 - (cos(x * pi * 2) + 1) / 2
 
-    def get_period(self):
+    def get_period(self) -> float:
         """Return, which period the animation is on."""
         return (time() - self.offset) / self.period
 
-    def __init__(self, period, repeats=True, offset=0):
+    def __init__(self, period, offset=0):
         self.period = period
-        self.repeats = repeats
 
         # the animations are based on time - this offset
         # this is done so animations can properly start and smoothly transition
@@ -158,12 +157,12 @@ if __name__ == "__main__":
 
     top = tkinter.Tk()
 
-    r = 50
+    r = 100
 
     canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * Animation.LED_COUNT)
     canvas.pack()
 
-    animation = ProgressAnimation(Color(100, 200, 200), 1)  # TODO add animation here
+    animation = MetronomeAnimation(Color(100, 200, 200), 1)  # TODO add animation here
 
     while True:
         top.update_idletasks()
