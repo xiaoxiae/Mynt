@@ -1,6 +1,9 @@
+"""A module for working with the LED strip."""
 import board
-import neopixel
+from neopixel import NeoPixel
 from typing import *
+
+from visuals import *
 
 
 class Strip:
@@ -9,14 +12,21 @@ class Strip:
     BRIGHTNESS = 0.05  # the LEDs are insanely bright
 
     def __init__(self):
-        self.strip = neopixel.NeoPixel(
+        self.strip = NeoPixel(
             self.PIN, self.LED_COUNT, brightness=self.BRIGHTNESS, auto_write=False
         )
 
-    def set_color(self, i: int, color: Tuple[int]):
-        """Set the color of the i-th diode of the strip."""
-        self.strip[i] = color
+    def set(self, animation: Animation):
+        """Set the color of the strip, given an animation."""
+        for i, color in enumerate(animation()):
+            self.strip[i] = color
 
-    def display(self):
-        """Display the currently set colors."""
         self.strip.show()
+
+
+if __name__ == "__main__":
+    animation = MetronomeAnimation(Color(100, 200, 200), 1)
+    strip = Strip()
+
+    while True:
+        strip.set(animation)
