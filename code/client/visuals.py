@@ -22,12 +22,8 @@ class Color:
         """Return the color as a tuple."""
         return int(self.r), int(self.g), int(self.b)
 
-    def to_bits(self) -> int:
-        """Return a 24-bit representation of the color."""
-        return (self.r << 16) | (self.g << 8) | self.b
-
     def to_rgb(color) -> str:
-        """Return the color as a RRRGGGBBB string."""
+        """Return the color as a RRRGGGBBB string. Mostly for testing."""
         return "#%02x%02x%02x" % color.to_tuple()
 
     def __linear_interpolation(self, a: Numeric, b: Numeric, x: Numeric) -> Numeric:

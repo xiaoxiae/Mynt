@@ -1,20 +1,22 @@
-import time
-from rpi_ws281x import PixelStrip
-import argparse
+import board
+import neopixel
+from typing import *
 
 
 class Strip:
     LED_COUNT = 5
-    LED_PIN = 18
+    PIN = board.D18
+    BRIGHTNESS = 0.05  # the LEDs are insanely bright
 
     def __init__(self):
-        self.strip = PixelStrip(self.LED_COUNT, self.LED_PIN)
-        self.strip.begin()
+        self.strip = neopixel.NeoPixel(
+            self.PIN, self.LED_COUNT, brightness=self.BRIGHTNESS, auto_write=False
+        )
 
-    def set_color(self, i: int, color: int):
+    def set_color(self, i: int, color: Tuple[int]):
         """Set the color of the i-th diode of the strip."""
-        strip.setPixelColor(i, color)
+        self.strip[i] = color
 
     def display(self):
         """Display the currently set colors."""
-        strip.show()
+        self.strip.show()

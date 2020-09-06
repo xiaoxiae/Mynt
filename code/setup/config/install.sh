@@ -11,7 +11,7 @@ apt-get update -y
 apt-get upgrade -y
 
 apt install git python3-pip -y
-pip3 install pyyaml typeguard rpi_ws281x
+pip3 install pyyaml typeguard rpi_ws281x adafruit-circuitpython-neopixel
 
 if [ $DEBUG -eq 1 ]
 then
