@@ -46,20 +46,25 @@ class Color:
 class Animation(ABC):
     """A base class for all LED animations."""
 
-    LED_COUNT: int = 5  # how many LEDs there are to animate
-
     def sinify(self, x: float) -> float:
         """Run through a sin function that returns values \in [0, 1]"""
         return 1 - (cos(x * pi * 2) + 1) / 2
 
     def get_period(self) -> float:
         """Return, which period the animation is on."""
-        return (time() - self.offset) / self.period
+        period = (time() - self.offset) / self.period
 
-    def __init__(self, period, offset=0):
+        if period > 1 and not self.repeats:
+            period = 0.99999
+
+        return period
+
+    def __init__(self, period, offset=0, led_count=5, repeats=True):
         self.period = period
+        self.led_count = led_count
+        self.repeats = repeats
 
-        # the animations are based on time - this offset
+        # the animations are based on $current time - this offset$
         # this is done so animations can properly start and smoothly transition
         self.offset = offset
 
@@ -78,9 +83,8 @@ class PulsingAnimation(Animation):
         self.c2 = c2
 
     def __call__(self):
-        return [
-            self.c1.interpolate(self.c2, self.sinify(self.get_period()))
-        ] * self.LED_COUNT
+        color = self.c1.interpolate(self.c2, self.sinify(self.get_period()))
+        return [color] * self.led_count
 
 
 class MetronomeAnimation(Animation):
@@ -91,10 +95,11 @@ class MetronomeAnimation(Animation):
         self.color = color
 
     def __call__(self):
-        colors = [Color(0, 0, 0) for _ in range(self.LED_COUNT)]
+        # all colors are 0
+        colors = [Color(0, 0, 0) for _ in range(self.led_count)]
 
-        # LED position
-        pos = self.sinify(self.get_period()) * (self.LED_COUNT - 1)
+        # LED position, based on the period
+        pos = self.sinify(self.get_period()) * (self.led_count - 1)
 
         l1 = int(pos)
         l2 = int(ceil(pos))
@@ -116,12 +121,12 @@ class LinearAnimation(Animation):
         self.color = color
 
     def __call__(self):
-        colors = [Color(0, 0, 0) for _ in range(self.LED_COUNT)]
+        colors = [Color(0, 0, 0) for _ in range(self.led_count)]
 
-        pos = self.get_period() * self.LED_COUNT
+        pos = self.get_period() * self.led_count
 
-        l1 = int(pos) % self.LED_COUNT
-        l2 = int(ceil(pos)) % self.LED_COUNT
+        l1 = int(pos) % self.led_count
+        l2 = int(ceil(pos)) % self.led_count
 
         l1_c = 1 - (pos - int(pos))
         l2_c = 1 - (int(ceil(pos)) - pos)
@@ -140,13 +145,47 @@ class ProgressAnimation(Animation):
         self.color = color
 
     def __call__(self):
-        colors = [Color(0, 0, 0) for _ in range(self.LED_COUNT)]
+        colors = [Color(0, 0, 0) for _ in range(self.led_count)]
 
-        pos = self.get_period() * self.LED_COUNT
-        colors[int(pos) % self.LED_COUNT] = self.color.darker(pos - int(pos))
+        pos = self.get_period() * self.led_count
+        colors[int(pos) % self.led_count] = self.color.darker(pos - int(pos))
 
-        for i in range(int(pos) % self.LED_COUNT):
+        for i in range(int(pos) % self.led_count):
             colors[i] = self.color
+
+        return colors
+
+
+class TransitionAnimation(Animation):
+    """An animation transition - slowly transition from one animation to another."""
+
+    def __init__(self, a1: Animation, a2: Animation, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.a1 = a1
+        self.a2 = a2
+
+        self.offset = time()
+        self.repeats = False
+
+        self.prev_c = None
+
+    def __call__(self):
+        c = self.get_period()
+
+        colors = []
+        a1c = self.a1()
+        a2c = self.a2()
+
+        for i in range(self.led_count):
+            colors.append(a1c[i].interpolate(a2c[i], c))
+
+        # if the transition is over, discard the first animation
+        # this way there isn't an infinite recursion
+        # might look odd, but will likely simplify the code immensely
+        if self.prev_c == c and self.a1 is not self.a2:
+            self.a1 = self.a2
+
+        self.prev_c = c
 
         return colors
 
@@ -159,15 +198,18 @@ if __name__ == "__main__":
 
     r = 100
 
-    canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * Animation.LED_COUNT)
-    canvas.pack()
+    a1 = MetronomeAnimation(Color(255, 0, 0), 1)
+    a2 = PulsingAnimation(Color(0, 255, 0), Color(255, 0, 0), 1)
 
-    animation = MetronomeAnimation(Color(100, 200, 200), 1)  # TODO add animation here
+    animation = TransitionAnimation(a1, a2, 1)
+
+    canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * animation.led_count)
+    canvas.pack()
 
     while True:
         top.update_idletasks()
         top.update()
 
-        for i in range(Animation.LED_COUNT):
+        for i in range(animation.led_count):
             color = animation()[i].to_rgb()
             canvas.create_rectangle(i * r, 0, (i + 1) * r, r, fill=color)
