@@ -16,10 +16,10 @@ class Strip:
             self.PIN, self.LED_COUNT, brightness=self.BRIGHTNESS, auto_write=False
         )
 
-    def set(self, animation: Animation):
+    def animate(self, animation: Animation):
         """Set the color of the strip, given an animation."""
         for i, color in enumerate(animation()):
-            self.strip[i] = color
+            self.strip[i] = color.to_tuple()
 
         self.strip.show()
 
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     strip = Strip()
 
     while True:
-        strip.set(animation)
+        strip.animate(animation)
