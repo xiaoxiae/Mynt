@@ -3,7 +3,7 @@
 DEBUG=1
 
 set -eu
-cd "$(dirname "$0")"
+cd "$(dirname "$0")"  # work relative to this script
 
 RPI_BOOT_MNT_LOCATION=/tmp/rpimnt/boot
 RPI_SYSTEM_MNT_LOCATION=/tmp/rpimnt/system
@@ -69,9 +69,9 @@ fi
 echo "Copying configuration."
 sudo cp -r config/* $RPI_SYSTEM_MNT_LOCATION/home/pi/
 
-# create the configuration
-sudo mkdir $RPI_SYSTEM_MNT_LOCATION/home/pi/mynt
-sudo tee "$RPI_SYSTEM_MNT_LOCATION/home/pi/mynt/config.txt" << EOF
+# create a file exposed to the user via MTP
+sudo mkdir $RPI_SYSTEM_MNT_LOCATION/home/pi/mtp
+sudo tee "$RPI_SYSTEM_MNT_LOCATION/home/pi/mtp/config.txt" << EOF
 #----------------------------------------#
 # This is a configuration file for Mynt. #
 # It's YAML, but txt is user-friendly :) #
@@ -91,6 +91,11 @@ sudo tee "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local" << EOF
 exit 0
 EOF
 sudo chmod +x "$RPI_SYSTEM_MNT_LOCATION/etc/rc.local"
+
+
+echo "Copying Mynt software."
+sudo cp -r ../client $RPI_SYSTEM_MNT_LOCATION/home/pi/
+
 
 if [ $DEBUG -eq 1 ]
 then
