@@ -9,9 +9,11 @@ from time import time
 from dataclasses import dataclass
 
 import logging
+
 logging.basicConfig(filename="server.log", level=logging.DEBUG)
 
-queues: Dict[str, asyncio.PriorityQueue] = {}
+# a queue for Mynt ID groups
+queues: Dict[str, Dict[str, asyncio.PriorityQueue]] = {}
 
 DELIMITER = b" | "  # delimiter between messages sent from the client
 MAX_QUEUE_SIZE = 10  # number of items in a single queue
@@ -27,14 +29,19 @@ class Message:
         return self.delivered < other.delivered
 
 
-def ensure_queue(mid):
-    """Ensure that a queue with the given Mynt ID exists."""
+def ensure_queue(mid, uid):
+    """Ensure that a queue with the given Mynt ID and UID exists. Only do so if there
+    wouldn't be more than 2 queues in the given group. Return True if the queue was
+    created successfully, else return False."""
     if mid not in queues:
-        queues[mid] = asyncio.PriorityQueue(MAX_QUEUE_SIZE)
+        queues[mid] = {}
+
+    if not uid in queues[mid]:
+        queues[mid][uid] = asyncio.PriorityQueue(MAX_QUEUE_SIZE)
 
 
 async def handler(reader, writer):
-    """A client handler. The details of the protocol are covered in DOCUMENTATION.md."""
+    """A client handler."""
     uid, other = (await reader.readline()).strip().split(DELIMITER, 1)
 
     # if we can split some more, the client is sending data
@@ -42,30 +49,26 @@ async def handler(reader, writer):
         mid, command = other.split(DELIMITER, 1)
         message = Message(uid, command, time())
 
-        ensure_queue(mid)
+        # forbid more than 2 devices under one Mynt ID
+        if mid in queues and len(queues[mid]) != 2:
+            writer.close()
+            await writer.wait_closed()
+
+        ensure_queue(mid, uid)
 
         # if the queue is full, discard older messages
-        if queues[mid].full():
-            queues[mid].get_nowait()
+        if queues[mid][uid].full():
+            queues[mid][uid].get_nowait()
 
-        queues[mid].put_nowait(message)
+        queues[mid][uid].put_nowait(message)
 
     # if not, send some data to the client
     else:
         mid = other
 
-        # wait for some actual data to send
-        while True:
-            ensure_queue(mid)
-            message = await queues[mid].get()
-
-            # if the command is from the same UID, place it back immediately
-            if uid == message.uid:
-                queues[mid].put_nowait(message)
-            else:
-                # clear empty queues
-                if queues[mid].empty():
-                    del queues[mid]
+        for other_uid in queues[mid]:
+            if other_uid != uid:
+                message = await queues[mid][other_uid].get()
 
                 writer.write(message.command)
                 await writer.drain()
