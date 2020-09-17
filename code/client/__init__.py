@@ -1,8 +1,8 @@
 """A Python module for controlling a Mynt."""
 import os
 
-from client.visuals import *
 from client.configuration import *
+from client.visuals import *
 
 
 class Mynt:

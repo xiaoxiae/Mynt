@@ -2,12 +2,11 @@
 # TODO: should IP be localhost?
 # TODO: discard messages that are too old
 # - a new co-routine to prevent people spamming with different UIDs
-from typing import *
 import asyncio
-from time import time
-from dataclasses import dataclass
-
 import logging
+from dataclasses import dataclass
+from time import time
+from typing import *
 
 logging.basicConfig(
     filename="server.log",

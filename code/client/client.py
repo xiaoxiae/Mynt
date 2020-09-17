@@ -1,12 +1,11 @@
 """A module for communicating with Mynt's server."""
 import asyncio
-
 from typing import *
 from uuid import getnode as get_mac
 
 
 class Client:
-    MAX_MESSAGE_SIZE = 1024  # TODO: read from some config file
+    MAX_MESSAGE_SIZE = 1024
     ADDRESS = ("localhost", 9106)  # TODO: IP
 
     def __init__(self, mynt_id: str, uid: Optional[str] = None):

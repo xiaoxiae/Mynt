@@ -1,11 +1,11 @@
 """A module for working with Mynt's configuration file. Most of the code is stolen from
 my other project: https://github.com/xiaoxiae/Education-Scripts."""
-from typing import *
-from dataclasses import *
 import os
+from dataclasses import *
+from typing import *
 
-from yaml import safe_load
 from typeguard import check_type
+from yaml import safe_load
 
 
 class Strict:

@@ -1,10 +1,11 @@
 """A module for anything color/animation related."""
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import *
-from math import cos, pi, ceil
+
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from math import ceil, cos, pi
 from time import time
+from typing import *
 
 Numeric = Union[int, float]
 
