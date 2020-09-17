@@ -5,27 +5,7 @@ from typing import *
 from uuid import getnode as get_mac
 
 
-def connect(function):
-    """a decorator for asynchronously creating a socket, doing stuff with it and
-    then properly closing it."""
-
-    async def wrapper(self, *args, **kwargs):
-        reader, writer = await asyncio.open_connection(*self.ADDRESS)
-
-        result = await function(self, reader, writer, *args, **kwargs)
-
-        writer.close()
-        await writer.wait_closed()
-
-        return result
-
-    return wrapper
-
-
 class Client:
-    """A class for talking to the Mynt server (as a client)."""
-
-    # constants
     MAX_MESSAGE_SIZE = 1024  # TODO: read from some config file
     ADDRESS = ("localhost", 9106)  # TODO: IP
 
@@ -33,19 +13,34 @@ class Client:
         self.mynt_id = mynt_id
         self.uid = uid or hex(get_mac())
 
-    @connect
-    async def send(self, _, writer, data: str):
+    async def __connect(self):
+        """Start a connection with the server."""
+        return await asyncio.open_connection(*self.ADDRESS)
+
+    async def __close(self, writer):
+        """Close the connection to the server."""
+        writer.close()
+        await writer.wait_closed()
+
+    async def send(self, data: str):
         """A function for sending data to the Mynt server."""
-        writer.write(f"{self.uid} | {self.mynt_id} | {data}\n".encode("utf-8"))
+        _, writer = await self.__connect()
+
+        writer.write(f"{self.uid} | {self.mynt_id} | {data}\n".encode())
         await writer.drain()
 
-    @connect
-    async def receive(self, reader, writer):
+        await self.__close(writer)
+
+    async def receive(self):
         """A function for receiving data from the Mynt server."""
-        writer.write(f"{self.uid} | {self.mynt_id}\n".encode("utf-8"))
+        reader, writer = await self.__connect()
+
+        writer.write(f"{self.uid} | {self.mynt_id}\n".encode())
         await writer.drain()
 
-        return (await reader.read(self.MAX_MESSAGE_SIZE)).decode("utf-8")
+        result = (await reader.read(self.MAX_MESSAGE_SIZE)).decode()
+        await self.__close(writer)
+        return result
 
 
 # try to talk between the two clients (when the server is running)

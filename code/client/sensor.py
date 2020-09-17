@@ -8,8 +8,6 @@ import asyncio
 
 
 class Sensor:
-    """A class for working with the heartbeat sensor."""
-
     checked: bool = False  # is toggled when a beat is registered via the check function
     check_frequency: float = 50  # how frequently to check (per second)
 

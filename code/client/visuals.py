@@ -21,8 +21,6 @@ def sinify(x: float) -> float:
 
 @dataclass
 class Color:
-    """A class for working with colors."""
-
     r: Numeric
     g: Numeric
     b: Numeric

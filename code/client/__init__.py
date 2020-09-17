@@ -1,3 +1,4 @@
+"""A Python module for controlling a Mynt."""
 import os
 
 from client.visuals import *

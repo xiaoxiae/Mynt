@@ -3,4 +3,5 @@ disable=redefined-outer-name,
         unused-wildcard-import,
         wildcard-import,
         too-few-public-methods,
-        invalid-name
+        invalid-name,
+        missing-class-docstring

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+"""The Mynt server module."""
 # TODO: should IP be localhost?
 # TODO: discard messages that are too old
 # - a new co-routine to prevent people spamming with different UIDs
@@ -25,6 +25,8 @@ MAX_QUEUE_SIZE = 10  # number of items in a single queue
 
 @dataclass
 class Message:
+    """A class for working with messages on the Mynt server."""
+
     uid: str  # from which device
     command: str  # which command
     delivered: int  # when delivered
@@ -85,10 +87,10 @@ async def handler(reader, writer):
 
         for other_uid in queues[mid]:
             if other_uid != uid:
-                command = await queues[mid][other_uid].get().command
+                command = (await queues[mid][other_uid].get()).command
                 log(f"{d(uid)} | {d(mid)} | queue found, sending command {d(command)}.")
 
-                writer.write(message.command)
+                writer.write(command)
                 await writer.drain()
                 break
         else:
