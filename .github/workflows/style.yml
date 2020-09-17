@@ -9,5 +9,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - uses: psf/black@stable
-      - run: pip install pylint
-      - run: pylint **/*.py
+      - name: Pylint install
+        run: pip install pylint
+      - name: Pylint check
+        run: pylint --fail-under=9 **/*.py
+        working-directory: code
