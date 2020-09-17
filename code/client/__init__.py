@@ -1,35 +1,28 @@
 import os
-from visuals import Color, PulsingAnimation, MetronomeAnimation, LinearAnimation
-from configuration import ConfigurationWatcher
+from asyncio 
+
+from visuals import *
+from configuration import *
 
 
-class State:
+class Mynt:
     """A class representing the state of Mynt."""
 
-    class Animations:
-        """All the different animations of Mynt."""
-
-        BLANK = lambda: Color(0, 0, 0)
-        ERROR = PulsingAnimation(Color(0, 0, 0), Color(1, 1, 1), 1)  # TODO
-        CONNECTING_TO_WIFI = MetronomeAnimation(Color(0, 0, 0), 1)  # TODO
-        CONNECTING_TO_SERVER = MetronomeAnimation(Color(0, 0, 0), 1)  # TODO
-
-    state_animation = Animations.BLANK
-
     def __init__(self):
-        self.cw = ConfigurationWatcher()
+        self.configuration = ConfigurationWatcher()
+        self.animation = Animations.DEFAULT
 
-    def run(self):
-        """The main program loop. Runs around 60 times per second."""
+    async def run(self):
+        """The main program loop."""
 
         # TODO: LEDs
         # TODO: communication with the server
 
         if self.cw.changed():
             if self.cw.configuration is None:
-                pass  # TODO: error animation
+                self.animation = Animations.ERROR
 
 
 if __name__ == "__main__":
-    state = State()
-    state.run
+    mynt = Mynt()
+    mynt.run()

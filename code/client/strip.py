@@ -9,7 +9,7 @@ from visuals import *
 class Strip:
     LED_COUNT = 5
     PIN = board.D18
-    BRIGHTNESS = 0.05  # the LEDs are insanely bright
+    BRIGHTNESS = 0.05  # the LEDs are insanely bright, 5% should be fine
 
     def __init__(self):
         self.strip = NeoPixel(

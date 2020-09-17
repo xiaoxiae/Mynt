@@ -12,13 +12,17 @@ class Client:
     MAX_MESSAGE_SIZE = 1024  # TODO: read from some config file
     ADDRESS = ("localhost", 9106)  # TODO: IP
 
+    # a queue for sending messages to the server
+    send_command_queue = asyncio.PriorityQueue()
+    receive_command_queue = asyncio.PriorityQueue()
+
     def __init__(self, mynt_id: str, uid: Optional[str] = None):
         self.mynt_id = mynt_id
         self.uid = uid or hex(get_mac())
 
     def connect(function):
-        """a decorator for connecting to the server using a socket, doing stuff and
-        then closing the socket."""
+        """a decorator for asynchronously creating a socket, doing stuff with it and
+        then properly closing it."""
 
         async def wrapper(self, *args, **kwargs):
             reader, writer = await asyncio.open_connection(*self.ADDRESS)
@@ -45,6 +49,10 @@ class Client:
         await writer.drain()
 
         return (await reader.read(self.MAX_MESSAGE_SIZE)).decode("utf-8")
+
+    async def communicate(self):
+        """An asynchonous function that continuously attempts to both send jkj"""
+        while 
 
 
 # try to talk between the two clients (when the server is running)

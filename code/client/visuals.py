@@ -1,7 +1,6 @@
 """A module for handing anything color/animation related."""
 from __future__ import annotations
 from dataclasses import dataclass
-from enum import Enum
 from typing import *
 from math import cos, pi, ceil
 from abc import ABC, abstractmethod
@@ -70,7 +69,7 @@ class Animation(ABC):
         self.offset = offset
 
     @abstractmethod
-    def __call__(self) -> Tuple[Tuple[int, int, int]]:
+    def __call__(self) -> Tuple[Tuple[int, int, int] * self.led_count]:
         """All animations must be callable and return a tuple of the LED colors."""
 
 
@@ -191,6 +190,20 @@ class TransitionAnimation(Animation):
         return colors
 
 
+class Animations:
+    """All the different animations of Mynt."""
+
+    DEFAULT = lambda: Color(0, 0, 0)  # nothing
+    ERROR = PulsingAnimation(Color(0, 0, 0), Color(255, 0, 0), 1)  # red
+
+    CONNECTING_TO_WIFI = MetronomeAnimation(Color(255, 255, 255), 1.5)  # white
+    CONNECTING_TO_SERVER = MetronomeAnimation(Color(0, 255, 0), 1.5)  # green
+
+    # transitions from white to pink briefly when a beat is detected
+    CONTACTING_PAIR_BLANK = LinearAnimation(Color(255, 255, 255), 1.5)  # white
+    CONTACTING_PAIR_BEAT = LinearAnimation(Color(170, 0, 50), 1.5)  # pink
+
+
 # runs testing code when ran as a module
 if __name__ == "__main__":
     import tkinter
@@ -199,10 +212,7 @@ if __name__ == "__main__":
 
     r = 100
 
-    a1 = MetronomeAnimation(Color(255, 0, 0), 1)
-    a2 = PulsingAnimation(Color(0, 255, 0), Color(255, 0, 0), 1)
-
-    animation = TransitionAnimation(a1, a2, 1)
+    animation = Animations.ERROR
 
     canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * animation.led_count)
     canvas.pack()
@@ -215,17 +225,3 @@ if __name__ == "__main__":
             color = animation()[i].to_rgb()
             print(animation()[i].to_tuple())
             canvas.create_rectangle(i * r, 0, (i + 1) * r, r, fill=color)
-
-
-class Animations(Enum):
-    """All the different animations of Mynt."""
-
-    DEFAULT = lambda: Color(0, 0, 0)  # nothing
-    ERROR = PulsingAnimation(Color(0, 0, 0), Color(255, 0, 0), 1)  # red
-
-    CONNECTING_TO_WIFI = MetronomeAnimation(Color(255, 255, 255), 1.5)  # white
-    CONNECTING_TO_SERVER = MetronomeAnimation(Color(0, 255, 0), 1.5)  # green
-
-    # transitions from white to pink briefly when a beat is detected
-    CONTACTING_PAIR_BLANK = MetronomeAnimation(Color(255, 255, 255), 1.5)  # white
-    CONTACTING_PAIR_BEAT = MetronomeAnimation(Color(170, 0, 50), 1.5)  # pink
