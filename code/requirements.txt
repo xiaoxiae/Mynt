@@ -1,0 +1,5 @@
+pyyaml
+typeguard
+rpi_ws281x
+adafruit-circuitpython-neopixel
+adafruit-circuitpython-ads1x15
