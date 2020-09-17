@@ -1,9 +1,10 @@
-"""A module for working with the LED strip."""
-import board
-from neopixel import NeoPixel
+"""A module for working with Mynt's LED strip."""
 from typing import *
 
-from visuals import *
+import board
+from neopixel import NeoPixel
+
+from client.visuals import *
 
 
 class Strip:

@@ -1,15 +1,14 @@
 import os
-from asyncio 
 
-from visuals import *
-from configuration import *
+from client.visuals import *
+from client.configuration import *
 
 
 class Mynt:
     """A class representing the state of Mynt."""
 
     def __init__(self):
-        self.configuration = ConfigurationWatcher()
+        self.cw = ConfigurationWatcher()
         self.animation = Animations.DEFAULT
 
     async def run(self):

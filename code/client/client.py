@@ -1,8 +1,25 @@
-"""A module for communicating with the Mynt server."""
+"""A module for communicating with Mynt's server."""
 import asyncio
 
 from typing import *
 from uuid import getnode as get_mac
+
+
+def connect(function):
+    """a decorator for asynchronously creating a socket, doing stuff with it and
+    then properly closing it."""
+
+    async def wrapper(self, *args, **kwargs):
+        reader, writer = await asyncio.open_connection(*self.ADDRESS)
+
+        result = await function(self, reader, writer, *args, **kwargs)
+
+        writer.close()
+        await writer.wait_closed()
+
+        return result
+
+    return wrapper
 
 
 class Client:
@@ -12,32 +29,12 @@ class Client:
     MAX_MESSAGE_SIZE = 1024  # TODO: read from some config file
     ADDRESS = ("localhost", 9106)  # TODO: IP
 
-    # a queue for sending messages to the server
-    send_command_queue = asyncio.PriorityQueue()
-    receive_command_queue = asyncio.PriorityQueue()
-
     def __init__(self, mynt_id: str, uid: Optional[str] = None):
         self.mynt_id = mynt_id
         self.uid = uid or hex(get_mac())
 
-    def connect(function):
-        """a decorator for asynchronously creating a socket, doing stuff with it and
-        then properly closing it."""
-
-        async def wrapper(self, *args, **kwargs):
-            reader, writer = await asyncio.open_connection(*self.ADDRESS)
-
-            result = await function(self, reader, writer, *args, **kwargs)
-
-            writer.close()
-            await writer.wait_closed()
-
-            return result
-
-        return wrapper
-
     @connect
-    async def send(self, reader, writer, data: str):
+    async def send(self, _, writer, data: str):
         """A function for sending data to the Mynt server."""
         writer.write(f"{self.uid} | {self.mynt_id} | {data}\n".encode("utf-8"))
         await writer.drain()
@@ -49,10 +46,6 @@ class Client:
         await writer.drain()
 
         return (await reader.read(self.MAX_MESSAGE_SIZE)).decode("utf-8")
-
-    async def communicate(self):
-        """An asynchonous function that continuously attempts to both send jkj"""
-        while 
 
 
 # try to talk between the two clients (when the server is running)

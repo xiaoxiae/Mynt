@@ -1,10 +1,10 @@
-"""A module for working with the configuration file. Most of the code is stolen from my
-other project: https://github.com/xiaoxiae/Education-Scripts."""
+"""A module for working with Mynt's configuration file. Most of the code is stolen from
+my other project: https://github.com/xiaoxiae/Education-Scripts."""
 from typing import *
 from dataclasses import *
-from yaml import safe_load, YAMLError
-import sys
 import os
+
+from yaml import safe_load
 from typeguard import check_type
 
 
@@ -44,10 +44,11 @@ class Configuration(Strict):
 
         if is_dataclass(c):
             return recursion(cls, c, d)
-        elif get_origin(c) is list:
+
+        if get_origin(c) is list:
             return [recursion(cls, get_args(c)[0], i) for i in d]
-        else:
-            return d
+
+        return d
 
     @classmethod
     def from_file(cls, path: str):
@@ -56,8 +57,8 @@ class Configuration(Strict):
         try:
             with open(path, "r") as f:
                 return Configuration.from_dictionary(safe_load(f) or {})
-        except Exception as e:
-            print(e)
+        except Exception:
+            pass
 
 
 class ConfigurationWatcher:
@@ -96,7 +97,8 @@ class ConfigurationWatcher:
 
 if __name__ == "__main__":
     cw = ConfigurationWatcher(
-        "/home/xiaoxiae/Documents/Education/Programming/Other/projects/Mynt/code/setup/config/mynt/config.txt"
+        "/home/xiaoxiae/Documents/Education/Programming/Other/projects/Mynt/"
+        "code/setup/config/mynt/config.txt"
     )
 
     print(cw.configuration)

@@ -1,13 +1,22 @@
-"""A module for handing anything color/animation related."""
+"""A module for anything color/animation related."""
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import *
 from math import cos, pi, ceil
 from abc import ABC, abstractmethod
 from time import time
-from random import randint, seed
 
 Numeric = Union[int, float]
+
+
+def linear_interpolation(a: Numeric, b: Numeric, x: Numeric) -> Numeric:
+    """Interpolate between a and b. $x \\in [0, 1]$"""
+    return a * (1 - x) + b * x
+
+
+def sinify(x: float) -> float:
+    """Run through a sin function that returns values \\in [0, 1]"""
+    return 1 - (cos(x * pi * 2) + 1) / 2
 
 
 @dataclass
@@ -22,20 +31,16 @@ class Color:
         """Return the color as a tuple."""
         return int(self.r), int(self.g), int(self.b)
 
-    def to_rgb(color) -> str:
+    def to_rgb(self) -> str:
         """Return the color as a RRRGGGBBB string. Mostly for testing."""
-        return "#%02x%02x%02x" % color.to_tuple()
-
-    def __linear_interpolation(self, a: Numeric, b: Numeric, x: Numeric) -> Numeric:
-        """Interpolate between a and b. $x \in [0, 1]$"""
-        return a * (1 - x) + b * x
+        return "#%02x%02x%02x" % self.to_tuple()
 
     def interpolate(self, other: Color, x: Numeric) -> Color:
-        """Interpolate between two colors. $x \in [0, 1]$"""
+        """Interpolate between two colors. $x \\in [0, 1]$"""
         return Color(
-            self.__linear_interpolation(self.r, other.r, x),
-            self.__linear_interpolation(self.g, other.g, x),
-            self.__linear_interpolation(self.b, other.b, x),
+            linear_interpolation(self.r, other.r, x),
+            linear_interpolation(self.g, other.g, x),
+            linear_interpolation(self.b, other.b, x),
         )
 
     def darker(self, coefficient: float):
@@ -45,10 +50,6 @@ class Color:
 
 class Animation(ABC):
     """A base class for all LED animations."""
-
-    def sinify(self, x: float) -> float:
-        """Run through a sin function that returns values \in [0, 1]"""
-        return 1 - (cos(x * pi * 2) + 1) / 2
 
     def get_period(self) -> float:
         """Return, which period the animation is on."""
@@ -69,12 +70,12 @@ class Animation(ABC):
         self.offset = offset
 
     @abstractmethod
-    def __call__(self) -> Tuple[Tuple[int, int, int] * self.led_count]:
+    def __call__(self) -> Tuple[Color]:
         """All animations must be callable and return a tuple of the LED colors."""
 
 
 class PulsingAnimation(Animation):
-    """A pulsing animation -- from color to color in a sine wave."""
+    """A pulsing animation - from color to color in a sine wave."""
 
     def __init__(self, c1: Color, c2: Color, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,12 +84,12 @@ class PulsingAnimation(Animation):
         self.c2 = c2
 
     def __call__(self):
-        color = self.c1.interpolate(self.c2, self.sinify(self.get_period()))
+        color = self.c1.interpolate(self.c2, sinify(self.get_period()))
         return [color] * self.led_count
 
 
 class MetronomeAnimation(Animation):
-    """A metronome animation -- from one end of the LEDs to the other."""
+    """A metronome animation - from one end of the LEDs to the other."""
 
     def __init__(self, color: Color, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -99,7 +100,7 @@ class MetronomeAnimation(Animation):
         colors = [Color(0, 0, 0) for _ in range(self.led_count)]
 
         # LED position, based on the period
-        pos = self.sinify(self.get_period()) * (self.led_count - 1)
+        pos = sinify(self.get_period()) * (self.led_count - 1)
 
         l1 = int(pos)
         l2 = int(ceil(pos))
@@ -114,7 +115,7 @@ class MetronomeAnimation(Animation):
 
 
 class LinearAnimation(Animation):
-    """A linear animation -- from one end of the LEDs to the other."""
+    """A linear animation - from one end of the LEDs to the other."""
 
     def __init__(self, color: Color, *args, **kwargs):
         super().__init__(*args, **kwargs)
