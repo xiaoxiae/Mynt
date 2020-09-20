@@ -13,9 +13,10 @@ RPI_IMAGE_URL="https://downloads.raspberrypi.org/raspios_lite_armhf_latest"
 
 ID_LENGTH=16
 
-
-echo "Running Mynt configuration script."
-echo "----------------------------------"
+cat << EOF
+Running Mynt configuration script.
+----------------------------------
+EOF
 
 # download the RPI image (if it's not already downloaded)
 if [ ! -f $RPI_IMAGE_NAME ]
@@ -115,7 +116,8 @@ sleep 1
 sudo umount $RPI_BOOT_MNT_LOCATION
 sudo umount $RPI_SYSTEM_MNT_LOCATION
 
-echo ""
-echo "Done!"
-echo "Plug the SD into the Raspberry Pi Zero for it to get configured."
+cat << EOF
 
+Done!
+Plug the SD into the Raspberry Pi Zero for it to get configured.
+EOF
