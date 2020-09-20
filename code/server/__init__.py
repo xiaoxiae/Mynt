@@ -18,7 +18,7 @@ logging.basicConfig(
 # a queue for Mynt ID groups
 queues: Dict[str, Dict[str, asyncio.PriorityQueue]] = {}
 
-DELIMITER = b" | "  # delimiter between messages sent from the client
+SEPARATOR = b" | "  # separator between messages sent from the client
 MAX_QUEUE_SIZE = 10  # number of items in a single queue
 
 
@@ -57,15 +57,15 @@ async def close_with_message(writer, message: List[Union[str, bytes]]):
 
 async def handler(reader, writer):
     """A client handler."""
-    uid, other = (await reader.readline()).strip().split(DELIMITER, 1)
+    uid, other = (await reader.readline()).strip().split(SEPARATOR, 1)
 
     log(uid, "connected.")
 
     # if we can split some more, the client is sending data
-    if DELIMITER in other:
+    if SEPARATOR in other:
         log(uid, "parsing message.")
 
-        mid, command = other.split(DELIMITER, 1)
+        mid, command = other.split(SEPARATOR, 1)
         message = Message(uid, command, time())
 
         log(uid, mid, f"sent command '{command.decode()}'.")
