@@ -7,10 +7,15 @@ from uuid import getnode as get_mac
 class Client:
     MAX_MESSAGE_SIZE = 1024
     ADDRESS = ("localhost", 9106)  # TODO: IP
+    SEPARATOR = " | "
 
     def __init__(self, mynt_id: str, uid: Optional[str] = None):
         self.mynt_id = mynt_id
         self.uid = uid or hex(get_mac())
+
+    def join(self, *args) -> bytes:
+        """Create a message by joining parts of it using a separator"""
+        return (self.SEPARATOR.join(args) + "\n").encode()
 
     async def __connect(self):
         """Start a connection with the server."""
@@ -25,7 +30,7 @@ class Client:
         """A function for sending data to the Mynt server."""
         _, writer = await self.__connect()
 
-        writer.write(f"{self.uid} | {self.mynt_id} | {data}\n".encode())
+        writer.write(self.join(self.uid, self.mynt_id, data))
         await writer.drain()
 
         await self.__close(writer)
@@ -34,7 +39,7 @@ class Client:
         """A function for receiving data from the Mynt server."""
         reader, writer = await self.__connect()
 
-        writer.write(f"{self.uid} | {self.mynt_id}\n".encode())
+        writer.write(self.join(self.uid, self.mynt_id))
         await writer.drain()
 
         result = (await reader.read(self.MAX_MESSAGE_SIZE)).decode()
