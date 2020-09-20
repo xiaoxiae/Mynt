@@ -34,6 +34,12 @@ class Message:
         return self.delivered < other.delivered
 
 
+def log(*args, sep=" | "):
+    """Log items separated by a separator. If some of the parts are bytes, decode them
+    to strings."""
+    logging.info(sep.join(a.decode() if isinstance(a, bytes) else a for a in args))
+
+
 def ensure_queue(mid, uid):
     """Ensure that a queue with the given Mynt ID and UID exists."""
     if mid not in queues:
@@ -43,30 +49,30 @@ def ensure_queue(mid, uid):
         queues[mid][uid] = asyncio.PriorityQueue(MAX_QUEUE_SIZE)
 
 
+async def close_with_message(writer, message: List[Union[str, bytes]]):
+    log(*message)
+    writer.close()
+    await writer.wait_closed()
+
+
 async def handler(reader, writer):
     """A client handler."""
     uid, other = (await reader.readline()).strip().split(DELIMITER, 1)
 
-    # simplify code - debug, logging
-    d = lambda x: x.decode()
-    log = logging.info
-
-    log(f"{d(uid)} | connected.")
+    log(uid, "connected.")
 
     # if we can split some more, the client is sending data
     if DELIMITER in other:
-        log(f"{d(uid)} | parsing message.")
+        log(uid, "parsing message.")
 
         mid, command = other.split(DELIMITER, 1)
         message = Message(uid, command, time())
 
-        log(f"{d(uid)} | {d(mid)} | sent command '{d(command)}'.")
+        log(uid, mid, f"sent command '{command.decode()}'.")
 
         # forbid more than 2 devices under one Mynt ID
         if mid in queues and uid not in queues[mid] and len(queues[mid]) != 2:
-            writer.close()
-            await writer.wait_closed()
-            log(f"{d(uid)} | {d(mid)} | too many devices, connection closed.")
+            await close_with_message(writer, [uid, mid, "too many devices, closing."])
             return
 
         ensure_queue(mid, uid)
@@ -76,30 +82,27 @@ async def handler(reader, writer):
             queues[mid][uid].get_nowait()
 
         queues[mid][uid].put_nowait(message)
-        log(f"{d(uid)} | {d(mid)} | command added.")
+        log(uid, mid, "command added.")
 
     # if not, send some data to the client
     else:
         mid = other
 
-        log(f"{d(uid)} | {d(mid)} | checking queues.")
+        log(uid, mid, "checking queues.")
 
         for other_uid in queues[mid]:
             if other_uid != uid:
                 command = (await queues[mid][other_uid].get()).command
-                log(f"{d(uid)} | {d(mid)} | queue found, sending command {d(command)}.")
+                log(uid, mid, f"queue found, sending command '{command.decode()}'.")
 
                 writer.write(command)
                 await writer.drain()
                 break
         else:
-            writer.close()
-            await writer.wait_closed()
-            log(f"{d(uid)} | {d(mid)} | queue not found, connection closed.")
+            await close_with_message(writer, [uid, mid, "queue not found, closing."])
             return
 
-    writer.close()
-    await writer.wait_closed()
+    await close_with_message(writer, [uid, mid, "connection closing."])
 
 
 coro = asyncio.start_server(handler, "localhost", 9106)
