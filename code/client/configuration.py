@@ -13,6 +13,8 @@ class Strict:
 
     def __post_init__(self):
         """Perform the check."""
+        # disabled because Pylint doesn't understand the magical __annotations__...
+        # pylint: disable=E1101
         for name, field_type in self.__annotations__.items():
             check_type("", self.__dict__[name], field_type)
 
@@ -26,7 +28,7 @@ class Wifi(Strict):
 @dataclass
 class Configuration(Strict):
     wifi: List[Wifi]
-    id: str
+    id: str  # Mynt ID, but 'id' this is more understandable for a common user
 
     @classmethod
     def from_dictionary(cls, d: Dict):

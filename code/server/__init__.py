@@ -2,6 +2,8 @@
 # TODO: should IP be localhost?
 # TODO: discard messages that are too old
 # - a new co-routine to prevent people spamming with different UIDs
+# TODO: non-async PriorityQueue?
+# - it not using async methods in the current implementation...
 import asyncio
 import logging
 from dataclasses import dataclass

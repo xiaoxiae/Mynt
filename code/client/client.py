@@ -5,6 +5,7 @@ import asyncio
 from typing import *
 from uuid import getnode as get_mac
 
+
 def connect_and_close(function):
     """a decorator for connecting to the server using a socket, doing stuff and
     then closing the socket."""
