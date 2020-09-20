@@ -19,4 +19,4 @@ When getting a message from the server, the user first has to send a message in 
 <UID> | <Mynt ID>\n
 ```
 
-After this, the server will send a single message back and close the connection. The format of this message is the command that the paired device sent to the server.
+After this, the server will either close the connection without sending anything if there are no messages for the client, or send one message back and then close the connection if there are some.

@@ -91,9 +91,17 @@ async def handler(reader, writer):
 
         log(uid, mid, "checking queues.")
 
+        if mid not in queues:
+            await close_with_message(writer, [uid, mid, "no such mid queue group."])
+            return
+
         for other_uid in queues[mid]:
             if other_uid != uid:
-                command = (await queues[mid][other_uid].get()).command
+                if queues[mid][other_uid].empty():
+                    await close_with_message(writer, [uid, mid, "pair queue empty."])
+                    return
+
+                command = queues[mid][other_uid].get_nowait().command
                 log(uid, mid, f"queue found, sending command '{command.decode()}'.")
 
                 writer.write(command)
