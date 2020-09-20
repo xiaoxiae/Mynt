@@ -34,7 +34,7 @@ class Message:
         return self.delivered < other.delivered
 
 
-def log(*args, sep=" | "):
+def log(*args: Union[str, bytes], sep=" | "):
     """Log items separated by a separator. If some of the parts are bytes, decode them
     to strings."""
     logging.info(sep.join(a.decode() if isinstance(a, bytes) else a for a in args))
@@ -50,6 +50,7 @@ def ensure_queue(mid, uid):
 
 
 async def close_with_message(writer, message: List[Union[str, bytes]]):
+    """Close the connection via a writer using the provided message."""
     log(*message)
     writer.close()
     await writer.wait_closed()
