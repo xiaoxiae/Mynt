@@ -28,7 +28,7 @@ class Wifi(Strict):
 @dataclass
 class Configuration(Strict):
     wifi: List[Wifi]
-    id: str  # Mynt ID, but 'id' this is more understandable for a common user
+    id: str  # Mynt ID, but 'id' is more understandable to a common user
 
     @classmethod
     def from_dictionary(cls, d: Dict):
@@ -56,6 +56,8 @@ class Configuration(Strict):
     def from_file(cls, path: str):
         """Initialize a Configuration object from a file. Returns None if the file
         doesn't exist, can't be open or the parsing failed."""
+        # we don't care about specific exceptions in this case
+        # pylint: disable=W0703
         try:
             with open(path, "r") as f:
                 return Configuration.from_dictionary(safe_load(f) or {})
@@ -64,18 +66,13 @@ class Configuration(Strict):
 
 
 class ConfigurationWatcher:
-    """A class for interacting with the configuration (and watching for changes)."""
+    """A class for watching for changes in the configuration file and reading it."""
 
     PATH = "/home/pi/mynt/config.txt"
 
     def __init__(self, path=PATH):
         self.path = path
-        self.__update_configuration()
-        self.modified_time = None
-
-    def __update_configuration(self):
-        """Re-parse the configuration, setting it to None if it is not present."""
-        self.configuration = Configuration.from_file(self.path)
+        self.last_modified_time = None
 
     def changed(self):
         """Check the modified time of the configuration, returning True if it has
@@ -84,23 +81,15 @@ class ConfigurationWatcher:
         # to fail, when the file is inaccessible due to (for example) someone writing
         # to it. That's why try-except is used here.
         try:
-            mtime = os.path.getmtime(self.path)
+            new_modified_time = os.path.getmtime(self.path)
         except FileNotFoundError:
-            mtime = None
+            new_modified_time = None
 
-        result = mtime != self.modified_time
-        self.modified_time = mtime
-
-        if result:
-            self.__update_configuration()
+        result = new_modified_time != self.modified_time
+        self.modified_time = new_modified_time
 
         return result
 
-
-if __name__ == "__main__":
-    cw = ConfigurationWatcher(
-        "/home/xiaoxiae/Documents/Education/Programming/Other/projects/Mynt/"
-        "code/setup/config/mynt/config.txt"
-    )
-
-    print(cw.configuration)
+    def get(self):
+        """Return the configuration."""
+        return Configuration.from_file(self.PATH)
