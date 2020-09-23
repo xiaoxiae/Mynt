@@ -54,19 +54,22 @@ class Animation(ABC):
         """Return, which period the animation is on."""
         period = (time() - self.offset) / self.period
 
+        # if we're not repeating, stay stuck at the last state of the animation
         if period > 1 and not self.repeats:
             period = 0.99999
 
         return period
 
-    def __init__(self, period, offset=0, led_count=5, repeats=True):
+    def __init__(self, period: int, offset=0, led_count=5, repeats=True):
         self.period = period
         self.led_count = led_count
         self.repeats = repeats
 
         # the animations are based on $current time - this offset$
         # this is done so animations can properly start and smoothly transition
-        self.offset = offset
+        # if offset is -1, it is set to current time to start the animation from the
+        # beginning
+        self.offset = offset if offset is not -1 else time()
 
     @abstractmethod
     def __call__(self) -> Tuple[Color]:
@@ -190,18 +193,38 @@ class TransitionAnimation(Animation):
         return colors
 
 
+class ChainedAnimation(Animation):
+    """A sequence of animations chained one after another."""
+
+    def __init__(self, *args: Animation, **kwargs):
+        super().__init__(*args, **kwargs)
+        # TODO - period is based on the provided animations
+
+
+class Colors:
+    NONE = Color(0, 0, 0)
+    RED = Color(255, 0, 0)
+    GREEN = Color(0, 255, 0)
+    WHITE = Color(255, 255, 255)
+    PINK = Color(170, 0, 50)
+
+
 class Animations:
     """All the different animations of Mynt."""
 
-    DEFAULT = lambda: Color(0, 0, 0)  # nothing
-    ERROR = PulsingAnimation(Color(0, 0, 0), Color(255, 0, 0), 1)  # red
+    DEFAULT = lambda: Colors.NONE  # nothing
+    ERROR = PulsingAnimation(Colors.NONE, Colors.RED, 1)
 
-    CONNECTING_TO_WIFI = MetronomeAnimation(Color(255, 255, 255), 1.5)  # white
-    CONNECTING_TO_SERVER = MetronomeAnimation(Color(0, 255, 0), 1.5)  # green
+    CONFIGURATION_READ = PulsingAnimation(
+        Colors.NONE, Colors.WHITE, 2, repeats=False, offset=-1
+    )
+
+    CONNECTING_TO_WIFI = MetronomeAnimation(Colors.WHITE, 1.5)  # white
+    CONNECTING_TO_SERVER = MetronomeAnimation(Colors.GREEN, 1.5)  # green
 
     # transitions from white to pink briefly when a beat is detected
-    CONTACTING_PAIR_BLANK = LinearAnimation(Color(255, 255, 255), 1.5)  # white
-    CONTACTING_PAIR_BEAT = LinearAnimation(Color(170, 0, 50), 1.5)  # pink
+    CONTACTING_PAIR_BLANK = LinearAnimation(Colors.WHITE, 1.5)  # white
+    CONTACTING_PAIR_BEAT = LinearAnimation(Colors.PINK, 1.5)  # pink
 
 
 # runs testing code when ran as a module
@@ -212,7 +235,7 @@ if __name__ == "__main__":
 
     r = 100
 
-    animation = Animations.ERROR
+    animation = Animations.CONFIGURATION_READ
 
     canvas = tkinter.Canvas(top, bg="blue", height=r, width=r * animation.led_count)
     canvas.pack()
