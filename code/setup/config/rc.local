@@ -9,5 +9,5 @@ mount -t gadgetfs gadgetfs /dev/gadget
 
 # TODO: make a uMTP while-true loop in a separate script
 /usr/bin/umtprd &
-python3 /home/pi/client/__init__.py
+python3 /home/pi/client/__init__.py &
 exit 0
