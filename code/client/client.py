@@ -28,7 +28,6 @@ def connect_and_close(function):
 
 
 class Client:
-
     MAX_MESSAGE_SIZE = 1024
     ADDRESS = ("localhost", 9106)  # TODO: IP
     SEPARATOR = " | "

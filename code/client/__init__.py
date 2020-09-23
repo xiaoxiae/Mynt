@@ -9,18 +9,29 @@ class Mynt:
     """A class representing the state of Mynt."""
 
     def __init__(self):
+        # configuration
         self.cw = ConfigurationWatcher()
+        self.configuration = self.cw.get()
+
+        # visuals
         self.animation = Animations.DEFAULT
+        self.strip = Strip()
 
-    async def run(self):
-        """The main program loop."""
+        # client version (for automatic updates)
+        self.version = "0.1"
 
-        # TODO: LEDs
-        # TODO: communication with the server
-
+    def run(self):
+        """The main program loop $n$ times per second."""
+        # update configuration
         if self.cw.changed():
-            if self.cw.configuration is None:
-                self.animation = Animations.ERROR
+            self.configuration = self.cw.get()
+
+            # TODO: error / config load animation
+
+        # animate
+        self.strip.animate(self.animation)
+
+        # TODO: communication with the server
 
 
 if __name__ == "__main__":
