@@ -2,19 +2,22 @@
 from typing import *
 
 import board
-from neopixel import NeoPixel
+from neopixel import NeoPixel as NP
 
 from client.visuals import *
 
 
 class Strip:
-    LED_COUNT = 5
-    PIN = board.D18
+    PIN = board.D18  # port on the RPI
+    LED_COUNT = 5  # number of LEDs
     BRIGHTNESS = 0.05  # the LEDs are insanely bright, 5% should be fine
 
     def __init__(self):
-        self.strip = NeoPixel(
-            self.PIN, self.LED_COUNT, brightness=self.BRIGHTNESS, auto_write=False
+        self.strip = NP(
+            self.PIN,
+            self.LED_COUNT,
+            brightness=self.BRIGHTNESS,
+            auto_write=False,  # don't automatically write to LEDs
         )
 
     def animate(self, animation: Animation):

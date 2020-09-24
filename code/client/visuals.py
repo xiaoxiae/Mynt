@@ -69,7 +69,7 @@ class Animation(ABC):
         # this is done so animations can properly start and smoothly transition
         # if offset is -1, it is set to current time to start the animation from the
         # beginning
-        self.offset = offset if offset is not -1 else time()
+        self.offset = offset if offset != -1 else time()
 
     @abstractmethod
     def __call__(self) -> Tuple[Color]:

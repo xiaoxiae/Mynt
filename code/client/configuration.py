@@ -72,7 +72,7 @@ class ConfigurationWatcher:
 
     def __init__(self, path=PATH):
         self.path = path
-        self.last_modified_time = None
+        self.last_mtime = None
 
     def changed(self):
         """Check the modified time of the configuration, returning True if it has
@@ -81,12 +81,12 @@ class ConfigurationWatcher:
         # to fail, when the file is inaccessible due to (for example) someone writing
         # to it. That's why try-except is used here.
         try:
-            new_modified_time = os.path.getmtime(self.path)
+            new_mtime = os.path.getmtime(self.path)
         except FileNotFoundError:
-            new_modified_time = None
+            new_mtime = None
 
-        result = new_modified_time != self.modified_time
-        self.modified_time = new_modified_time
+        result = new_mtime != self.last_mtime
+        self.last_mtime = new_mtime
 
         return result
 

@@ -32,9 +32,14 @@ class Client:
     ADDRESS = ("localhost", 9106)  # TODO: IP
     SEPARATOR = " | "
 
+    CHECK_PERIOD = 1 / 2  # how frequently to check for new messages
+    received_message: Optional[str] = None  # the last received message
+
     def __init__(self, uid: Optional[str] = None):
         self.mynt_id = None
         self.uid = uid or hex(get_mac())
+
+        asyncio.ensure_future(self.periodic_send())
 
     def __join(self, *args) -> bytes:
         """Create a message by joining parts of it using a separator"""
@@ -55,6 +60,20 @@ class Client:
         """A function for receiving data from the Mynt server."""
         writer.write(self.__join(self.uid, self.mynt_id))
         return (await reader.read(self.MAX_MESSAGE_SIZE)).decode()
+
+    async def periodic_send(self):
+        """An async function for periodically receiving data from the server and placing
+        it in a variable."""
+        while True:
+            self.received_message = await self.receive()
+
+            await asyncio.sleep(self.CHECK_PERIOD)
+
+    def get_received_message(self) -> Optional[str]:
+        """Return the last received message and clear the received_message variable."""
+        message = self.received_message
+        self.received_message = None
+        return message
 
 
 # try to talk between the two clients (when the server is running)

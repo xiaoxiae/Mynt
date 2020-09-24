@@ -9,10 +9,11 @@ import asyncio
 
 class Sensor:
     checked: bool = False  # is toggled when a beat is registered via the check function
-    check_frequency: float = 50  # how frequently to check (per second)
+
+    CHECK_PERIOD = 1 / 50  # how frequently to check (per second)
 
     def __init__(self):
-        pass  # TODO: initialize the sensors; something like:
+        # TODO: initialize the sensors; something like:
         # i2c = busio.I2C(board.SCL, board.SDA)
         # ads = ADS.ADS1015(i2c)
 
@@ -25,8 +26,12 @@ class Sensor:
         # while True:
         #     print(chan.value, chan.voltage)
 
+        # add to event loop
+        asyncio.ensure_future(self.periodic_check())
+
     def check(self):
-        """Return True if the sensor detected a beat we haven't processed yet."""
+        """Return True if the sensor detected a beat we haven't processed yet. If True
+        is returned, set it to False to check again."""
         result = self.checked
         self.checked = False
         return result
@@ -35,9 +40,10 @@ class Sensor:
         """An asynchronous function that checks for values from ADS and stores them in
         a variable."""
         while True:
-            await asyncio.sleep(1 / self.check_frequency)
+            # TODO: stuff with checking the sensor values
 
-            # TODO: stuff with checking the sensor values and setting checked=True
+            await asyncio.sleep(self.CHECK_PERIOD)
+            print("CHECKED!")
 
 
 if __name__ == "__main__":
