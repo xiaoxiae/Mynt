@@ -11,7 +11,7 @@ RPI_SYSTEM_MNT_LOCATION=/tmp/rpimnt/system
 RPI_IMAGE_NAME=rpios.img
 RPI_IMAGE_URL="https://downloads.raspberrypi.org/raspios_lite_armhf_latest"
 
-ID_LENGTH=16
+MYNT_ID_LENGTH=16
 
 cat << EOF
 Running Mynt configuration script.
@@ -41,7 +41,7 @@ sudo mount $disk\1 $RPI_BOOT_MNT_LOCATION
 sudo mount $disk\2 $RPI_SYSTEM_MNT_LOCATION
 
 
-echo "Saving Wifi credentials."
+echo "Saving Wifi credentials. The RPI will update and install the necessary packages, so do make sure that the Wifi connection is solid and the credentials are correct." | fmt
 echo -n "Name: "; read name
 echo -n "Password: "; read password
 sudo tee $RPI_BOOT_MNT_LOCATION/wpa_supplicant.conf << EOF
@@ -60,7 +60,7 @@ EOF
 echo -n "Enter Mynt pair ID (leave empty to generate one): "; read id
 if [ "$(echo $id | tr -d ' ')" == "" ]
 then
-	id=$(cat /dev/random | tr -cd a-zA-Z0-9 | head -c $ID_LENGTH)
+	id=$(cat /dev/random | tr -cd a-zA-Z0-9 | head -c $MYNT_ID_LENGTH)
 	echo "ID: $id"
 	echo "Enter it when creating the paired device. Press enter to continue."
 	read

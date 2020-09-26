@@ -36,6 +36,10 @@ git clone https://github.com/viveris/uMTP-Responder umtp
 make -C umtp
 sudo mv umtp/umtprd /usr/bin/umtprd
 
+echo "Cleaning up."
+rm ~/install.sh
+rm -r umtp
+
 cat << EOF
 
 Installation done!
